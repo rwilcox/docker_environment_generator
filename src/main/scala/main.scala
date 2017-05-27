@@ -27,12 +27,18 @@ object DockerEnvMain extends App {
       println(s"NOW:\tdocker run -i -t ${config.packageName} /bin/bash")   // no TTY, punt and show user how
     }
 
+    def doAction( mode : String )( config : Config ) {
+      mode match {
+        case "print" => return doPrint(config)
+      }
+    }
+
     override def main( args: Array[String] ): Unit = {
       val parser = buildParser
 
       parser.parse(args, Config()) match {
           case Some(config) => {
-              if (config.mode == "print") doPrint(config)
+              doAction(config.mode)(config) //look Ma, currying!
           }
           case None => println("Please use --help argument for usage instructions")
       }
