@@ -3,6 +3,9 @@ package com.wilcox
 import sys.process._
 import scopt._
 
+import java.nio.file._
+
+
 object DockerEnvMain extends App {
 
     case class Config(
@@ -15,8 +18,11 @@ object DockerEnvMain extends App {
             head("docker env tester / builder")
 
             cmd("print").action ((_, c) => c.copy(mode="print")).text("downloads Docker container and prints how you would run it") 
+            cmd("write").action( (_, c) => c.copy(mode="write")).text("output Dockerfile")
 
             arg[String]("<docker pakage name>").action( (inVal, c) => c.copy(packageName=inVal)).text("Docker container path from Docker hub")
+
+            help("help").text("prints this usage text")
         }
 
         parser
@@ -30,6 +36,11 @@ object DockerEnvMain extends App {
     def doAction( mode : String )( config : Config ) {
       mode match {
         case "print" => return doPrint(config)
+        case "write" => {
+          val fw = new FilesWriter( config.packageName)
+          fw.write( Paths.get("") )
+        }
+        case _ => {}
       }
     }
 
